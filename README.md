@@ -30,7 +30,8 @@ The exact componets required are broken down into three foundational components:
 5.  **Add Federated Credentials to the App registrations:** In order to authenticate using OIDC (OpenID Connect / Federated Credentials) it needs to be instructed to trust GitHub
     **Option 1:** via Azure Portal
     - Navigate to the **Microsoft Entra ID** (Azure Active Directory) blade.
-    - Under *Manage*, select **App registrations** and click on your application **(github-actions-terraform)**.
+    - Under *Manage*, select **App registrations**.
+      In the *All appliations* click on your application **(github-actions-terraform)**.
     - Click on **Certificates & secrets** in the left menu.
     - Switch to the **Federated credentials** tab and click **Add credential**.
     - Select **GitHub Actions deployed Azure resources** from the drop-down.
