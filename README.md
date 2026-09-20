@@ -42,20 +42,20 @@ The exact componets required are broken down into three foundational components:
       2. **Repository:** Your repository name.
       3. **Entity type:** Select how your pipeline is triggered (usually Environment, Branch, or Pull request). For example, if your pipeline runs on the main branch, choose Branch and enter main
     - Give the credential a name and click **Add**.
-    **Option 2:** Azure cli
-    If you prefer the command line, you can create the federated credential by running the following command:
-    bash
-    ```
-    az ad app federated-credential create \
-    --id <AZURE_APP_OBJECT_ID> \
-    --parameters '{
-      "name": "github-actions-main-branch",
-      "issuer": "https://githubusercontent.com",
-      "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
-      "description": "Allow GitHub Actions to log in from the main branch",
-      "audiences": ["api://AzureADTokenExchange"]
-    }'
-    ```
+      - **Option 2:** Azure cli
+        - If you prefer the command line, you can create the federated credential by running the following command:
+          bash
+          ```
+          az ad app federated-credential create \
+          --id <AZURE_APP_OBJECT_ID> \
+          --parameters '{
+            "name": "github-actions-main-branch",
+            "issuer": "https://githubusercontent.com",
+            "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
+            "description": "Allow GitHub Actions to log in from the main branch",
+            "audiences": ["api://AzureADTokenExchange"]
+          }'
+          ```
 
     **To find the <AZURE_APP_OBJECT_ID>**
     1. **Azure Portal**
