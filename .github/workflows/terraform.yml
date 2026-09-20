@@ -38,7 +38,9 @@ jobs:
       - name: Azure Login Auth
         uses: azure/login@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+#         creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: ${{ secrets.CLIENT_ID }} ; # Microsoft entraid 
+          tenant-id: ${{ secrets.TENANT_ID }} ; # Microsoft entraid Tenant ID
 
       # 4. Initialize the working directories and providers
       - name: Terraform Init
