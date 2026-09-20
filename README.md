@@ -74,10 +74,10 @@ The exact componets required are broken down into three foundational components:
           az ad app federated-credential create \
           --id <AZURE_APP_OBJECT_ID> \
           --parameters '{
-            "name": "github-actions-main-branch",
+            "name": "github-actions-develop-branch",
             "issuer": "https://token.actions.githubusercontent.com",
-            "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
-            "description": "Allow GitHub Actions to log in from the main branch",
+            "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/develop",
+            "description": "Allow GitHub Actions to log in from the develop branch",
             "audiences": ["api://AzureADTokenExchange"]
           }'
           ```
