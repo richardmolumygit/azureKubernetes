@@ -44,13 +44,38 @@ The exact componets required are broken down into three foundational components:
     - Give the credential a name and click **Add**.
       - **Option 2:** Azure cli
         - If you prefer the command line, you can create the federated credential by running the following command:
-          bash
           ```
           az ad app federated-credential create \
           --id <AZURE_APP_OBJECT_ID> \
           --parameters '{
             "name": "github-actions-main-branch",
-            "issuer": "https://githubusercontent.com",
+            "issuer": "https://token.actions.githubusercontent.com",
+            "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
+            "description": "Allow GitHub Actions to log in from the main branch",
+            "audiences": ["api://AzureADTokenExchange"]
+          }'
+          ```
+          - For both main and develop, run this for each
+  
+          main
+          ```
+          az ad app federated-credential create \
+          --id <AZURE_APP_OBJECT_ID> \
+          --parameters '{
+            "name": "github-actions-main-branch",
+            "issuer": "https://token.actions.githubusercontent.com",
+            "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
+            "description": "Allow GitHub Actions to log in from the main branch",
+            "audiences": ["api://AzureADTokenExchange"]
+          }'
+          ```  
+          develop
+          ```
+          az ad app federated-credential create \
+          --id <AZURE_APP_OBJECT_ID> \
+          --parameters '{
+            "name": "github-actions-main-branch",
+            "issuer": "https://token.actions.githubusercontent.com",
             "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
             "description": "Allow GitHub Actions to log in from the main branch",
             "audiences": ["api://AzureADTokenExchange"]
@@ -65,12 +90,10 @@ The exact componets required are broken down into three foundational components:
        - Click on the application in the list. On the **Overview** blade, look for **Object ID** — this is your required target.
     2. **az cli**
        - **Option A:** If you already know the **Client ID (Application ID)** or the **Display Name** of your App Registration, you can quickly query the Object ID using [Azure CLI commands](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):
-         bash
          ```
          az ad sp show --id <YOUR_CLIENT_ID> --query id --output tsv
          ```
        - **Option B:** If you only know the Display Name**
-         bash
          ```
          az ad sp list --display-name "your-app-display-name" --query "[0].id" --output tsv
          ```
