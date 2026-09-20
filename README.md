@@ -7,7 +7,7 @@ The exact componets required are broken down into three foundational components:
    - **An Azure Service Principal (App Registration):**  This acts as the identity for your pipeline automation.
    _ **Role-Based Access Control (RBAC) Role Assignment:**  The Service Principal must be assigned a role such as **Contributor** or **Owner** scoped to your target Azure Subscription or Resource Group so Terraform has permission to create infrastructure
    - **Authentication Credentials:** You will need to capture four values from Azure:
-     - ARM_CLIENT_ID (The Application/Client ID of the Service Principal)
+     - CLIENT_ID (The Application/Client ID of the Service Principal)
        - Found under **Microsoft Entra ID** (For personal only there should only be one)
          - Under *Manage* > App registrations > gihb-actions-terraform > Application (client) ID
      - ARM_CLIENT_SECRET (A secret key generated for the Service Principal)
@@ -23,7 +23,7 @@ The exact componets required are broken down into three foundational components:
 
 3. **GitHub Configuration**
    On the GitHub side, you must hook these components together:
-   - **GitHub Encrypted Secrets:** You need to save your Azure credentials (ARM_CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID, ARM_SUBSCRIPTION_ID) as repository secrets so the workflow file can securely pass them to Terraform as environment variables
+   - **GitHub Encrypted Secrets:** You need to save your Azure credentials (CLIENT_ID, ARM_CLIENT_SECRET, ARM_TENANT_ID, ARM_SUBSCRIPTION_ID) as repository secrets so the workflow file can securely pass them to Terraform as environment variables
    - **Workflow YAML File:**  A workflow defined in your repository under .github/workflows/ that installs Terraform, logs into Azure, and runs the standard sequence (terraform init, terraform plan, and terraform apply).
 
 4. **Build Agents and tooling (The Runtime)**
@@ -94,7 +94,7 @@ The exact componets required are broken down into three foundational components:
     2. **az cli**
        - **Option A:** If you already know the **Client ID (Application ID)** or the **Display Name** of your App Registration, you can quickly query the Object ID using [Azure CLI commands](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):
          ```
-         az ad sp show --id <YOUR_CLIENT_ID> --query id --output tsv
+         az ad sp show --id <CLIENT_ID> --query id --output tsv
          ```
        - **Option B:** If you only know the Display Name**
          ```
