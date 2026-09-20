@@ -82,6 +82,9 @@ The exact componets required are broken down into three foundational components:
           }'
           ```
 
+          *Note: When examining this in the Azure portal, there will not be an **Organization ID**, even though this is a required field.*  
+          *The **Organization ID**" (which is just another name for your **Tenant ID**) isn't actually part of the Azure CLI parameters for this specific command, because Azure automatically knows which organization you belong to based on your active CLI session.
+
     **To find the <AZURE_APP_OBJECT_ID>**
     1. **Azure Portal**
        - Search for and select **Microsoft Entra ID** (formerly Azure Active Directory).
