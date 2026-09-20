@@ -1,0 +1,79 @@
+name: "Terraform CI/CD Pipeline"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform:
+    name: "Terraform Dev Workflow"
+    runs-on: ubuntu-latest
+    
+    # Force the execution to run directly inside your dev folder
+    defaults:
+      run:
+        working-directory: ./environments/dev
+
+    steps:
+      # 1. Pull down the source code from your repository
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      # 2. Set up the specific version of Terraform binaries
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      # 3. Authenticate securely with Azure (Bypasses manual browser logins)
+      - name: Azure Login Auth
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 4. Initialize the working directories and providers
+      - name: Terraform Init
+        run: terraform init
+
+      # 5. Format check to ensure your HCL blocks are clean
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+  plan:
+    name: "Terraform Dev Workflow"
+    needs: build
+    runs-on: ubuntu-latest
+    
+    # Force the execution to run directly inside your dev folder
+    defaults:
+      run:
+        working-directory: ./environments/dev
+
+    steps:
+      # Generate execution preview (Runs on both Pull Requests and Main Push)
+      - name: Terraform Plan
+        run: terraform plan -input=false
+
+  apply:
+    name: "Terraform Dev Workflow"
+    needs: plan
+    runs-on: ubuntu-latest
+    
+    # Force the execution to run directly inside your dev folder
+    defaults:
+      run:
+        working-directory: ./environments/dev
+
+    steps:
+      # Apply Changes (ONLY executes when code is merged directly into main)
+      - name: Terraform Apply
+#       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
