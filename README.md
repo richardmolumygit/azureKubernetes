@@ -8,8 +8,10 @@ The exact componets required are broken down into three foundational components:
    _ **Role-Based Access Control (RBAC) Role Assignment:**  The Service Principal must be assigned a role such as **Contributor** or **Owner** scoped to your target Azure Subscription or Resource Group so Terraform has permission to create infrastructure
    - **Authentication Credentials:** You will need to capture four values from Azure:
      - ARM_CLIENT_ID (The Application/Client ID of the Service Principal)
+       - Found under **Microsoft Entra ID** (For personal only there should only be one)
+         - Under *Manage* > App registrations > gihb-actions-terraform > Application (client) ID
      - ARM_CLIENT_SECRET (A secret key generated for the Service Principal)
-     - ARM_TENANT_ID ((Your Azure Directory/Tenant ID)
+     - ARM_TENANT_ID (Your Azure Directory/Tenant ID)
      - ARM_SUBSCRIPTION_ID  (The ID of the Azure Subscription where resources will live)
 
 *Note: While OpenID Connect (OIDC) federated credentials are often preferred for standard GitHub-to-Azure workflows to avoid secrets, Terraform automation natively relies on standard Client Secret / Service Principal environment variables.*
@@ -32,7 +34,7 @@ The exact componets required are broken down into three foundational components:
     - Navigate to the **Microsoft Entra ID** (Azure Active Directory) blade.
     - Under *Manage*, select **App registrations**.
       In the *All appliations* click on your application **(github-actions-terraform)**.
-    - Click on **Certificates & secrets** in the left menu.
+    - Under *Manage*, click on **Certificates & secrets** in the left menu.
     - Switch to the **Federated credentials** tab and click **Add credential**.
     - Select **GitHub Actions deployed Azure resources** from the drop-down.
     - Fill in your GitHub details:
