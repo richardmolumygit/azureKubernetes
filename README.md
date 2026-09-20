@@ -27,6 +27,32 @@ The exact componets required are broken down into three foundational components:
 4. **Build Agents and tooling (The Runtime)**
    - **Workflow YAML File:**  A workflow defined in your repository under .github/workflows/ that installs Terraform, logs into Azure, and runs the standard sequence (terraform init, terraform plan, and terraform apply).
 
+5.  **Add Federated Credentials to the App registrations:** In order to authenticate using OIDC (OpenID Connect / Federated Credentials) it needs to be instructed to trust GitHub
+    **Option 1:** via Azure Portal
+    - Navigate to the **Microsoft Entra ID** (Azure Active Directory) blade.
+    - Select **App registrations** and click on your application **(github-actions-terraform)**.
+    - Click on **Certificates & secrets** in the left menu.
+    - Switch to the **Federated credentials** tab and click **Add credential**.
+    - Select **GitHub Actions deployed Azure resources** from the drop-down.
+    - Fill in your GitHub details:
+      1. **Organization/Owner:* Your GitHub username or organization name.
+      2. **Repository:** Your repository name.
+      3. **Entity type:** Select how your pipeline is triggered (usually Environment, Branch, or Pull request). For example, if your pipeline runs on the main branch, choose Branch and enter main
+    - Give the credential a name and click **Add**.
+    **Option 2:** Azure cli
+    If you prefer the command line, you can create the federated credential by running the following command:
+    ```bash
+    az ad app federated-credential create \
+    --id <AZURE_APP_OBJECT_ID> \
+    --parameters '{
+      "name": "github-actions-main-branch",
+      "issuer": "https://githubusercontent.com",
+      "subject": "repo:<GITHUB_ORG_OR_USER>/<REPO_NAME>:ref:refs/heads/main",
+      "description": "Allow GitHub Actions to log in from the main branch",
+      "audiences": ["api://AzureADTokenExchange"]
+    }'
+    ```
+
 ***
 
 **Cost Braekdown**
