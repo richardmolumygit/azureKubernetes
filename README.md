@@ -41,7 +41,8 @@ The exact componets required are broken down into three foundational components:
     - Give the credential a name and click **Add**.
     **Option 2:** Azure cli
     If you prefer the command line, you can create the federated credential by running the following command:
-    ```bash
+    bash
+    ```
     az ad app federated-credential create \
     --id <AZURE_APP_OBJECT_ID> \
     --parameters '{
@@ -53,11 +54,30 @@ The exact componets required are broken down into three foundational components:
     }'
     ```
 
+    **To find the <AZURE_APP_OBJECT_ID>**
+    1. **Azure Portal**
+       - Search for and select **Microsoft Entra ID** (formerly Azure Active Directory).
+       - In the left-hand menu under the *Manage* section, click on **Enterprise applications.**
+       - Search for your application by its name (the name of your GitHub CI/CD Service Principal).
+       - Click on the application in the list. On the **Overview** blade, look for **Object ID** — this is your required target.
+    2. **az cli**
+       - **Option A:** If you already know the **Client ID (Application ID)** or the **Display Name** of your App Registration, you can quickly query the Object ID using [Azure CLI commands](https://learn.microsoft.com/en-us/cli/azure/?view=azure-cli-latest):
+         bash
+         ```
+         az ad sp show --id <YOUR_CLIENT_ID> --query id --output tsv
+         ```
+       - **Option B:** If you only know the Display Name**
+         bash
+         ```
+         az ad sp list --display-name "your-app-display-name" --query "[0].id" --output tsv
+         ```
+
 ***
 
 **Cost Braekdown**
   - **Microsoft Entra ID (Azure AD) Service Principal: Free.** Managing identity registration, creating Service Principals, and managing App Registrations are core directory features that do not incur any charges in the Microsoft Entra ID Free tier.
   - **Azure Storage Account (for Terraform/OpenTofu Remote State): Free (within limits).** The Azure Free Account includes 5 GB of LRS Blob Storage free for the first 12 months. Since a remote state file is typically only a few kilobytes or megabytes, it will comfortably remain 100% free.
+  - *Option A: If you know the Client ID (Application ID)**
   - **GitHub Secrets: Free.** GitHub offers secrets management at no cost for all public repositories, as well as for private repositories under standard free accounts.
 
 ***
