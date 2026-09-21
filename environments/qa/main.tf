@@ -20,7 +20,7 @@ resource "azurerm_resource_group" "rg" {
 
 # Instantiate your reusable module
 module "dev_aks" {
-  source = "./modules/aks"
+  source = "../../modules/azureKubernetesCluster"
 
   cluster_name        = "dev-learning-aks"
   resource_group_name = azurerm_resource_group.rg.name

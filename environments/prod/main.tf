@@ -23,7 +23,7 @@ resource "azurerm_resource_group" "prod_rg" {
 
 # Call the Reusable Module with Production Specifications
 module "prod_aks" {
-  source = "../../modules/aks"
+  source = "../../modules/azureKubernetesCluster"
 
   cluster_name        = "prod-learning-aks"
   resource_group_name = azurerm_resource_group.prod_rg.name
