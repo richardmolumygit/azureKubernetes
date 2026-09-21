@@ -47,9 +47,9 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
         run: >-
           terraform init -input=false
-          -backend-config="resource_group_name=${{ secrets.TFSTATE_RESOURCE_GROUP }}"
-          -backend-config="storage_account_name=${{ secrets.TFSTATE_STORAGE_ACCOUNT }}"
-          -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER }}"
+          -backend-config="resource_group_name=${{ vars.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ vars.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="container_name=${{ vars.TFSTATE_CONTAINER }}"
           -backend-config="key=dev.terraform.tfstate"
           -backend-config="use_azuread_auth=true"
           -backend-config="use_oidc=true"
@@ -100,9 +100,9 @@ jobs:
           ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
         run: >-
           terraform init -input=false
-          -backend-config="resource_group_name=${{ secrets.TFSTATE_RESOURCE_GROUP }}"
-          -backend-config="storage_account_name=${{ secrets.TFSTATE_STORAGE_ACCOUNT }}"
-          -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER }}"
+          -backend-config="resource_group_name=${{ vars.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ vars.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="container_name=${{ vars.TFSTATE_CONTAINER }}"
           -backend-config="key=dev.terraform.tfstate"
           -backend-config="use_azuread_auth=true"
           -backend-config="use_oidc=true"

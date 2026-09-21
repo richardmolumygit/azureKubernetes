@@ -21,7 +21,7 @@ resource "azurerm_subnet" "subnet" {
 # ====================================================================
 # The AKS Cluster (Single block managing the topology dynamically)
 # ====================================================================
-resource "azurerm_kubernetes_cluster" "aks" {
+resource "azurerm_kubernetes_cluster" "azureKubernetesCluster" {
   name                = var.cluster_name
   location            = var.location
   resource_group_name = var.resource_group_name
