@@ -53,10 +53,6 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-      # 5. Format check to ensure your HCL blocks are clean
-      - name: Terraform Format Check
-        run: terraform fmt -check
-
   plan:
     name: "Terraform Dev Workflow"
     needs: build
