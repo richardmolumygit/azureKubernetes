@@ -34,6 +34,13 @@ jobs:
         with:
           terraform_version: "1.7.0"
 
+      - name: Inspect OIDC Token Subject
+        run: |
+          JWT=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
+          echo "Current Subject claim is:"
+          echo $JWT | cut -d'.' -f2 | base64 --decode | jq -r '.sub'
+
+
       # 3. Authenticate securely with Azure (Bypasses manual browser logins)
       - name: Azure Login Auth
         uses: azure/login@v2
