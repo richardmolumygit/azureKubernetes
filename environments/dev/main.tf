@@ -1,6 +1,8 @@
 # Call module
 # To maximize the free tier, pass the minimal parameters
 terraform {
+  backend "azurerm" {}
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"

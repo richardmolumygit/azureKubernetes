@@ -14,8 +14,8 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: "Terraform Dev Workflow"
+  plan:
+    name: "Terraform Plan"
     runs-on: ubuntu-latest
     
     # Force the execution to run directly inside your dev folder
@@ -24,24 +24,14 @@ jobs:
         working-directory: ./environments/dev
 
     steps:
-      # 1. Pull down the source code from your repository
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # 2. Set up the specific version of Terraform binaries
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.7.0"
 
-      - name: Inspect OIDC Token Subject
-        run: |
-          JWT=$(curl -sS -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=api://AzureADTokenExchange" | jq -r '.value')
-          echo "Current Subject claim is:"
-          echo $JWT | cut -d'.' -f2 | base64 --decode | jq -r '.sub'
-
-
-      # 3. Authenticate securely with Azure (Bypasses manual browser logins)
       - name: Azure Login Auth
         uses: azure/login@v2
         with:
@@ -49,29 +39,37 @@ jobs:
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      # 4. Initialize the working directories and providers
       - name: Terraform Init
-        run: terraform init
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+        run: >-
+          terraform init -input=false
+          -backend-config="resource_group_name=${{ secrets.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ secrets.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER }}"
+          -backend-config="key=dev.terraform.tfstate"
+          -backend-config="use_azuread_auth=true"
+          -backend-config="use_oidc=true"
 
-  plan:
-    name: "Terraform Dev Workflow"
-    needs: build
-    runs-on: ubuntu-latest
-    
-    # Force the execution to run directly inside your dev folder
-    defaults:
-      run:
-        working-directory: ./environments/dev
-
-    steps:
-      # Generate execution preview (Runs on both Pull Requests and Main Push)
       - name: Terraform Plan
-        run: terraform plan -input=false
+        run: terraform plan -input=false -out=tfplan
+
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform-dev-plan
+          path: environments/dev/tfplan
+          if-no-files-found: error
 
   apply:
-    name: "Terraform Dev Workflow"
+    name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
+
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     # Force the execution to run directly inside your dev folder
     defaults:
@@ -79,7 +77,41 @@ jobs:
         working-directory: ./environments/dev
 
     steps:
-      # Apply Changes (ONLY executes when code is merged directly into main)
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Azure Login Auth
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        env:
+          ARM_USE_OIDC: true
+          ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+        run: >-
+          terraform init -input=false
+          -backend-config="resource_group_name=${{ secrets.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ secrets.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="container_name=${{ secrets.TFSTATE_CONTAINER }}"
+          -backend-config="key=dev.terraform.tfstate"
+          -backend-config="use_azuread_auth=true"
+          -backend-config="use_oidc=true"
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform-dev-plan
+          path: environments/dev
+
       - name: Terraform Apply
-#       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve -input=false
+        run: terraform apply -auto-approve -input=false tfplan
