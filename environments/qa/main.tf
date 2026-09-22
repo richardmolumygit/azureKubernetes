@@ -22,14 +22,14 @@ resource "azurerm_resource_group" "rg" {
 module "dev_aks" {
   source = "../../modules/azureKubernetesCluster"
 
-  cluster_name        = "dev-learning-aks"
+  cluster_name        = "test-aks-cluster"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  dns_prefix          = "dev-learning-k8s"
+  dns_prefix          = "test-aks-k8s"
   
   # Free tier environment settings
   sku_tier   = "Free"
-  vm_size    = "Standard_B2s"
+  vm_size    = "Standard_D2ads_v7"
   node_count = 1
   environment = "Dev"
 }

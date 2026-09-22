@@ -25,10 +25,10 @@ resource "azurerm_resource_group" "prod_rg" {
 module "prod_aks" {
   source = "../../modules/azureKubernetesCluster"
 
-  cluster_name        = "prod-learning-aks"
+  cluster_name        = "prod-aks-cluster"
   resource_group_name = azurerm_resource_group.prod_rg.name
   location            = azurerm_resource_group.prod_rg.location
-  dns_prefix          = "prod-enterprise-k8s"
+  dns_prefix          = "prod-aks-k8s"
   
   # Production Scale & SLA Configs
   sku_tier   = "Standard"         # Activates 99.95% financially backed Uptime SLA (~$73/mo)

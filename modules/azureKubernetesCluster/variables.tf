@@ -40,7 +40,7 @@ variable "sku_tier" {
 variable "vm_size" {
   type        = string
   description = "The size of the Virtual Machines for the worker nodes."
-  default     = "Standard_B2s"
+  default     = "Standard_D2ads_v7"
 }
 
 # new networks
