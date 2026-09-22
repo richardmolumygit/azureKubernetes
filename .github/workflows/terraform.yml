@@ -8,6 +8,12 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      confirm_deploy:
+        description: "Type GO to confirm execution"
+        required: true
+        default: "NO"
 
 permissions:
   id-token: write
@@ -15,7 +21,7 @@ permissions:
 
 jobs:
   plan:
-    name: "Terraform Plan"
+    name: "Terraform init & Plan"
     runs-on: ubuntu-latest
 
     env:
@@ -69,6 +75,7 @@ jobs:
     name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
+#   if {{ github.event.inputs.confirm_deploy == 'GO' }}
 
     env:
       ARM_USE_OIDC: true
