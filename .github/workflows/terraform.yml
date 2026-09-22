@@ -7,13 +7,17 @@ on:
       - develop
 # pull_request:
 #   branches:
-#     - main
+#     - main:
   workflow_dispatch:
     inputs:
       confirm_deploy:
         description: "Type GO to confirm execution"
         required: true
-        default: "NO"
+        default: "GO"
+      confirm_destroy:
+        description: "Type DESTROY to remove the development environment"
+        required: true
+        default: "DESTROY"
 
 permissions:
   id-token: write
@@ -75,11 +79,10 @@ jobs:
     name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
-#   if: {{ github.event.inputs.confirm_deploy == 'GO' }}
-    if: |
-        github.event.name == 'PUSH' ||
-        (github.event.name == 'workflow_dispatch' && 
-         github.event.inputs.confirm_deploy == 'GO')
+    if: >-
+      ${{ github.event_name == 'push' ||
+          (github.event_name == 'workflow_dispatch' &&
+           github.event.inputs.confirm_deploy == 'GO') }}
 
     env:
       ARM_USE_OIDC: true
@@ -87,8 +90,6 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
 
-#   if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
     # Force the execution to run directly inside your dev folder
     defaults:
       run:
@@ -128,3 +129,50 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -auto-approve -input=false tfplan
+
+  destroy:
+    name: "Terraform Destroy"
+    needs: plan
+    runs-on: ubuntu-latest
+    if: >-
+      ${{ github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.confirm_destroy == 'DESTROY' }}
+
+    env:
+      ARM_USE_OIDC: true
+      ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+
+    defaults:
+      run:
+        working-directory: ./environments/dev
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.7.0"
+
+      - name: Azure Login Auth
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        run: >-
+          terraform init -input=false
+          -backend-config="resource_group_name=${{ vars.TFSTATE_RESOURCE_GROUP }}"
+          -backend-config="storage_account_name=${{ vars.TFSTATE_STORAGE_ACCOUNT }}"
+          -backend-config="container_name=${{ vars.TFSTATE_CONTAINER }}"
+          -backend-config="key=dev.terraform.tfstate"
+          -backend-config="use_azuread_auth=true"
+          -backend-config="use_oidc=true"
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve -input=false
