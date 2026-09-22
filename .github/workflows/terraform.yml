@@ -75,7 +75,7 @@ jobs:
     name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
-#   if {{ github.event.inputs.confirm_deploy == 'GO' }}
+    if {{ github.event.inputs.confirm_deploy == 'GO' }}
 
     env:
       ARM_USE_OIDC: true
