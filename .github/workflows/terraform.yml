@@ -39,10 +39,10 @@ jobs:
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      - bash: |
-          targetType: 'filePath'
-          filePath: '$(System.DefaultWorkingDirectory)/scripts/createBlobStorage.sh'
-        displayName: "Create Blob storgage"
+      - run: |
+          chmod +x ./scripts/createBlobStorage.sh
+          ./scripts/createBlobStorage.sh
+        shell: bash
 
   plan:
     name: "Terraform init & Plan"
