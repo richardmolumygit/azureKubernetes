@@ -43,8 +43,8 @@ module "free_java_backend" {
   source = "../../modules/azureContainerApp"
 
   # Uses resource from azurerm_resource_group above
-  resource_group_name = module.aks.rg.name
-  location            = module.aks.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   
   app_name         = "helloworld-app"
   environment_name = "hello-world-env"
