@@ -2,9 +2,18 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = ">= 4.0"
+      version = "~> 3.0" # Keeps alignment with version 3.117.1
     }
   }
+}
+
+# NEW: Added for v3.x provider compatibility. A minimal logging workspace is mandatory.
+resource "azurerm_log_analytics_workspace" "logs" {
+  name                = "${var.app_name}-logs"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  sku                 = "PerGB2018"
+  retention_in_days   = 30 # Kept short to guarantee no hidden retention fees
 }
 
 # 1. Create the Container App Managed Environment (Consumption / Free-tier eligible)
@@ -57,7 +66,9 @@ resource "azurerm_container_app" "app" {
 
 # Output the public URL to access your app
 output "fqdn" {
-  value       = azurerm_container_app.app.ingress[0].fqdn
+  # FIXED: Removed the "[0]" list accessor to match the v3.x schema export pattern
+# value       = azurerm_container_app.app.ingress[0].fqdn
+  value       = azurerm_container_app.app.ingress.fqdn
   description = "The public application URL"
 }
 
