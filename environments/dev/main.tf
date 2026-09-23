@@ -42,7 +42,7 @@ module "free_java_backend" {
   # Properly routes relative file system path up to the modules tree
   source = "../../modules/azureContainerApp"
 
-  # Pulls directly from the AKS module outputs
+  # Uses resource from azurerm_resource_group above
   resource_group_name = module.aks.rg.name
   location            = module.aks.rg.location
   
