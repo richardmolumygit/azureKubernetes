@@ -15,9 +15,9 @@ on:
         required: true
         default: "GO"
       confirm_destroy:
-        description: "Type DESTROY to remove the development environment"
+        description: "Type DO to remove the development environment"
         required: true
-        default: "DESTROY"
+        default: "NO"
 
 permissions:
   id-token: write
@@ -137,7 +137,7 @@ jobs:
     runs-on: ubuntu-latest
     if: >-
       ${{ github.event_name == 'workflow_dispatch' &&
-          github.event.inputs.confirm_destroy == 'DESTROY' }}
+          github.event.inputs.confirm_destroy == 'DO' }}
 
     env:
       ARM_USE_OIDC: true
