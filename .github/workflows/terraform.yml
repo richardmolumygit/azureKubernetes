@@ -38,7 +38,6 @@ jobs:
 #       shell: bash
 
       - name: Azure Login Auth
-        uses: azure/login@v2
         run: |
           # Explicit non-interactive service principal login
           az login --service-principal \
