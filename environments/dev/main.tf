@@ -38,23 +38,22 @@ module "dev_aks" {
 # ==========================================
 # Call your new Minimalist Free Java App Module
 # ==========================================
-
 module "free_java_backend" {
+  # Properly routes relative file system path up to the modules tree
   source = "../../modules/azureContainerApp"
 
-  # Pass properties from your existing infrastructure directly
-  resource_group_name = azurerm_resource_group.your_existing_aks_rg.name
-  location            = azurerm_resource_group.your_existing_aks_rg.location
+  # Uses resource from azurerm_resource_group above
+  resource_group_name = module.aks.rg.name
+  location            = module.aks.rg.location
   
-  app_name        = "helloworld-app"
-  
-  # For setup, we can use a placeholder. Once your GitHub Actions pipeline builds 
-  # your custom image to a free registry like GHCR, swap this string out.
-  container_image = "://microsoft.com" 
+  app_name         = "helloworld-app"
+  environment_name = "hello-world-env"
+  container_image  = "://microsoft.com" 
 }
 
-# Optional root output to easily find your web application URL in the terminal
+# Exposes your public link upon a successful deployment run
 output "java_app_url" {
   value = "https://${module.free_java_backend.fqdn}"
+  description = "The public web URL of your deployed Java application"
 }
 
