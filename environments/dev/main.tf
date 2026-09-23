@@ -53,7 +53,9 @@ module "free_java_backend" {
 
 # Exposes your public link upon a successful deployment run
 output "java_app_url" {
-  value = "https://${module.free_java_backend.fqdn}"
+# Wrap the function within the one() function
+# value = "https://${module.free_java_backend.fqdn}"
+  value = "https://${one(module.free_java_backend.fqdn)}"
   description = "The public web URL of your deployed Java application"
 }
 
