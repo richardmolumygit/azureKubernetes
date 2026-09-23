@@ -46,7 +46,7 @@ module "free_java_backend" {
   resource_group_name = module.aks.rg.name
   location            = module.aks.rg.location
   
-  app_name         = "my-unique-java-helloworld-app"
+  app_name         = "helloworld-app"
   environment_name = "hello-world-env"
   container_image  = "://microsoft.com" 
 }
