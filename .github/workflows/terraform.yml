@@ -32,17 +32,31 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+#     - run: |
+#         chmod +x ./scripts/createBlobStorage.sh
+#         ./scripts/createBlobStorage.sh
+#       shell: bash
+
       - name: Azure Login Auth
         uses: azure/login@v2
+        run: |
+          # Explicit non-interactive service principal login
+          az login --service-principal \
+            -u "${{ secrets.CLIENT_ID }}"
+            -p "${{ secretes.AZURE_CLIENT_SECRET }}"
+            --tenant "${{ secrets.TENANT_ID }}"
+
+          chmod +x ./scripts/createBlobStorage.sh
+          ./scripts/createBlobStorage.sh
+        shell: bash
+
+      - name: Create Blob Storage
+        env:
+          AZURE_CLIENT_ID: ${{ secrets.CLIENT_ID }}
         with:
           client-id: ${{ secrets.CLIENT_ID }}
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
-
-      - run: |
-          chmod +x ./scripts/createBlobStorage.sh
-          ./scripts/createBlobStorage.sh
-        shell: bash
 
   plan:
     name: "Terraform init & Plan"
