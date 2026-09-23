@@ -67,8 +67,10 @@ resource "azurerm_container_app" "app" {
 # Output the public URL to access your app
 output "fqdn" {
   # FIXED: Removed the "[0]" list accessor to match the v3.x schema export pattern
+  # Changed it back to [*]
 # value       = azurerm_container_app.app.ingress[0].fqdn
-  value       = azurerm_container_app.app.ingress.fqdn
+# value       = azurerm_container_app.app.ingress.fqdn
+  value       = azurerm_container_app.app.ingress[*].fqdn
   description = "The public application URL"
 }
 
