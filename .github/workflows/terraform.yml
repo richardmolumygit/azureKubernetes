@@ -40,9 +40,10 @@ jobs:
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      - run: |
-          chmod +x ./scripts/createBlobStorage.sh
-          ./scripts/createBlobStorage.sh
+      - run: ./scripts/createBlobStorage.sh
+        env:
+          GITHUB_ACTIONS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          GITHUB_ACTIONS_SP_OBJECT_ID: ${{ secrets.OBJECT_ID }}
         shell: bash
 
 #     - name: Create blob storage using service principal to authenticate
