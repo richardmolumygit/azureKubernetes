@@ -14,13 +14,15 @@ export STATE_STORAGE="aksterraformstorage"
 export STATE_CONTAINER="tfstate"
 export LOCATION="eastus"
 
-echo "Setting GITHUB_ACTIONS_CLIENT_ID"
-export GITHUB_ACTIONS_CLIENT_ID=$(
-  az ad app list \
-    --display-name "github-actions-terraform" \
-    --query "[0].appId" \
-    --output tsv | tr -d '\r\n'
-)
+if [ -z "${GITHUB_ACTIONS_CLIENT_ID:-}" ]; then
+   echo "Setting GITHUB_ACTIONS_CLIENT_ID as it was not passed in"
+   export GITHUB_ACTIONS_CLIENT_ID=$(
+     az ad app list \
+       --display-name "github-actions-terraform" \
+       --query "[0].appId" \
+       --output tsv | tr -d '\r\n'
+   )
+fi
 
 if [[ ! "$GITHUB_ACTIONS_CLIENT_ID" =~ ^[0-9a-fA-F-]{36}$ ]]; then
   echo "GitHub Actions client ID was not found or is invalid" >&2
@@ -34,13 +36,6 @@ az account show \
 
 echo "Show user type"
 az account show --query "user.type" --output tsv
-
-echo "Setting LOCAL_USER_OBJECT_ID"
-LOCAL_USER_OBJECT_ID=$(az ad signed-in-user show \
-  --query id \
-  --output tsv)
-
-echo "Local user object ID: $LOCAL_USER_OBJECT_ID"
 
 echo "Creating resource group, storage account and container for terraform state"
 
@@ -80,27 +75,17 @@ STORAGE_ID=$(az storage account show \
   --output tsv)
 
 echo "Storage account ID: $STORAGE_ID"
-#echo "Granting Storage Blob Data Contributor role to your local Azure identity"
-
-#az role assignment create \
-#  --assignee-object-id "$LOCAL_USER_OBJECT_ID" \
-#  --assignee-principal-type User \
-#  --role "Storage Blob Data Contributor" \
-#  --scope "$STORAGE_ID"
-
-echo "Show LOCAL_USER_OBJECT_ID"
-echo "$LOCAL_USER_OBJECT_ID"
 
 # Verify theobject ID belongs to the current tenant
-echo "Show signed in user"
-az ad signed-in-user show \
-  --query "{id:id,name:userPrincipalName,tenant:tenantId}" \
-  --output json
+#echo "Show signed in user"
+#az ad signed-in-user show \
+#  --query "{id:id,name:userPrincipalName,tenant:tenantId}" \
+#  --output json
 
-echo "Show account info"
-az account show \
-  --query "{tenant:tenantId,subscription:id,user:user.name}" \
-  --output json
+#echo "Show account info"
+#az account show \
+#  --query "{tenant:tenantId,subscription:id,user:user.name}" \
+#  --output json
 
 echo "Retrieve ROLE_ID"
 ROLE_ID=$(az role definition list \
@@ -139,26 +124,26 @@ grant_blob_role() {
   echo "Granted Storage Blob Data Contributor role to $principal_type $principal_id"
 }
 
-echo "Granting Storage Blob Data Contributor role to your local Azure identity"
-grant_blob_role "$LOCAL_USER_OBJECT_ID" "User"
-
 echo "Granted Storage Blob Data Contributor role to your local Azure identity"
 echo "Granting Storage Blob Data Contributor role to GitHub Actions service principal"
 
 # Resolve the application client ID to its service principal object ID.
-GITHUB_ACTIONS_SP_OBJECT_ID=$(az ad sp show \
-  --id "$GITHUB_ACTIONS_CLIENT_ID" \
-  --query id \
-  --output tsv | tr -d '\r\n')
+if [ -z "${GITHUB_ACTIONS_SP_OBJECT_ID:-}" ]; then
+   echo "Setting GITHUB_ACTIONS_SP_OBJECT_ID as it wasn't passed it"
+   GITHUB_ACTIONS_SP_OBJECT_ID=$(az ad sp show \
+     --id "$GITHUB_ACTIONS_CLIENT_ID" \
+     --query id \
+     --output tsv | tr -d '\r\n')
+fi
 
 if [[ ! "$GITHUB_ACTIONS_SP_OBJECT_ID" =~ ^[0-9a-fA-F-]{36}$ ]]; then
   echo "GitHub Actions service principal object ID was not found or is invalid" >&2
   exit 1
 fi
 
-echo "GitHub Actions service principal object ID: $GITHUB_ACTIONS_SP_OBJECT_ID"
+#echo "GitHub Actions service principal object ID: $GITHUB_ACTIONS_SP_OBJECT_ID"
 
-grant_blob_role "$GITHUB_ACTIONS_SP_OBJECT_ID" "ServicePrincipal"
+#grant_blob_role "$GITHUB_ACTIONS_SP_OBJECT_ID" "ServicePrincipal"
 
 echo
 echo "Completed granting Storage Blob Data Contributor role to GitHub Actions service principal"
