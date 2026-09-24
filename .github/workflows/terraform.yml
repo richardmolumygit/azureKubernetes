@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - feature/**
 # pull_request:
 #   branches:
 #     - main:
@@ -32,27 +33,35 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-#     - run: |
-#         chmod +x ./scripts/createBlobStorage.sh
-#         ./scripts/createBlobStorage.sh
-#       shell: bash
+      - name: Azure Login Auth
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.CLIENT_ID }}
+          tenant-id: ${{ secrets.TENANT_ID }}
+          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      - name: Create blob storage using service principal to authenticate
-        run: |
-          # Explicit non-interactive service principal login
-          az login --service-principal \
-            -u "${{ secrets.CLIENT_ID }}" \
-            -p "${{ secrets.AZURE_CLIENT_SECRET }}" \
-            --tenant "${{ secrets.TENANT_ID }}"
-
+      - run: |
           chmod +x ./scripts/createBlobStorage.sh
           ./scripts/createBlobStorage.sh
         shell: bash
+
+#     - name: Create blob storage using service principal to authenticate
+#       run: |
+#         # Explicit non-interactive service principal login
+#         az login --service-principal \
+#           -u "${{ secrets.CLIENT_ID }}" \
+#           -p "${{ secrets.AZURE_CLIENT_SECRET }}" \
+#           --tenant "${{ secrets.TENANT_ID }}"
+#
+#         chmod +x ./scripts/createBlobStorage.sh
+#         ./scripts/createBlobStorage.sh
+#       shell: bash
 
   plan:
     name: "Terraform init & Plan"
     runs-on: ubuntu-latest
     needs: setup
+    if: ( github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' )
 
     env:
       ARM_USE_OIDC: true
