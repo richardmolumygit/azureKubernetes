@@ -37,7 +37,7 @@ jobs:
 #         ./scripts/createBlobStorage.sh
 #       shell: bash
 
-      - name: Azure Login Auth
+      - name: Create blob storage using service principal to authenticate
         run: |
           # Explicit non-interactive service principal login
           az login --service-principal \
@@ -48,14 +48,6 @@ jobs:
           chmod +x ./scripts/createBlobStorage.sh
           ./scripts/createBlobStorage.sh
         shell: bash
-
-      - name: Create Blob Storage
-        env:
-          AZURE_CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        with:
-          client-id: ${{ secrets.CLIENT_ID }}
-          tenant-id: ${{ secrets.TENANT_ID }}
-          subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
   plan:
     name: "Terraform init & Plan"
