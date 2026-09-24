@@ -141,9 +141,9 @@ if [[ ! "$GITHUB_ACTIONS_SP_OBJECT_ID" =~ ^[0-9a-fA-F-]{36}$ ]]; then
   exit 1
 fi
 
-echo "GitHub Actions service principal object ID: $GITHUB_ACTIONS_SP_OBJECT_ID"
+#echo "GitHub Actions service principal object ID: $GITHUB_ACTIONS_SP_OBJECT_ID"
 
-grant_blob_role "$GITHUB_ACTIONS_SP_OBJECT_ID" "ServicePrincipal"
+#grant_blob_role "$GITHUB_ACTIONS_SP_OBJECT_ID" "ServicePrincipal"
 
 echo
 echo "Completed granting Storage Blob Data Contributor role to GitHub Actions service principal"
