@@ -41,8 +41,8 @@ jobs:
         run: |
           # Explicit non-interactive service principal login
           az login --service-principal \
-            -u "${{ secrets.CLIENT_ID }}"
-            -p "${{ secrets.AZURE_CLIENT_SECRET }}"
+            -u "${{ secrets.CLIENT_ID }}" \
+            -p "${{ secrets.AZURE_CLIENT_SECRET }}" \
             --tenant "${{ secrets.TENANT_ID }}"
 
           chmod +x ./scripts/createBlobStorage.sh
