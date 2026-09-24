@@ -37,13 +37,6 @@ az account show \
 echo "Show user type"
 az account show --query "user.type" --output tsv
 
-#echo "Setting LOCAL_USER_OBJECT_ID"
-#LOCAL_USER_OBJECT_ID=$(az ad signed-in-user show \
-#  --query id \
-#  --output tsv)
-
-#echo "Local user object ID: $LOCAL_USER_OBJECT_ID"
-
 echo "Creating resource group, storage account and container for terraform state"
 
 az group create \
@@ -130,9 +123,6 @@ grant_blob_role() {
 
   echo "Granted Storage Blob Data Contributor role to $principal_type $principal_id"
 }
-
-#echo "Granting Storage Blob Data Contributor role to your local Azure identity"
-grant_blob_role "$LOCAL_USER_OBJECT_ID" "User"
 
 echo "Granted Storage Blob Data Contributor role to your local Azure identity"
 echo "Granting Storage Blob Data Contributor role to GitHub Actions service principal"
