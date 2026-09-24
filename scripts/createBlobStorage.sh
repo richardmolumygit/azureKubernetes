@@ -82,21 +82,17 @@ STORAGE_ID=$(az storage account show \
   --output tsv)
 
 echo "Storage account ID: $STORAGE_ID"
-#echo "Granting Storage Blob Data Contributor role to your local Azure identity"
-
-#echo "Show LOCAL_USER_OBJECT_ID"
-#echo "$LOCAL_USER_OBJECT_ID"
 
 # Verify theobject ID belongs to the current tenant
-echo "Show signed in user"
-az ad signed-in-user show \
-  --query "{id:id,name:userPrincipalName,tenant:tenantId}" \
-  --output json
+#echo "Show signed in user"
+#az ad signed-in-user show \
+#  --query "{id:id,name:userPrincipalName,tenant:tenantId}" \
+#  --output json
 
-echo "Show account info"
-az account show \
-  --query "{tenant:tenantId,subscription:id,user:user.name}" \
-  --output json
+#echo "Show account info"
+#az account show \
+#  --query "{tenant:tenantId,subscription:id,user:user.name}" \
+#  --output json
 
 echo "Retrieve ROLE_ID"
 ROLE_ID=$(az role definition list \
