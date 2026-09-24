@@ -37,12 +37,12 @@ az account show \
 echo "Show user type"
 az account show --query "user.type" --output tsv
 
-echo "Setting LOCAL_USER_OBJECT_ID"
-LOCAL_USER_OBJECT_ID=$(az ad signed-in-user show \
-  --query id \
-  --output tsv)
+#echo "Setting LOCAL_USER_OBJECT_ID"
+#LOCAL_USER_OBJECT_ID=$(az ad signed-in-user show \
+#  --query id \
+#  --output tsv)
 
-echo "Local user object ID: $LOCAL_USER_OBJECT_ID"
+#echo "Local user object ID: $LOCAL_USER_OBJECT_ID"
 
 echo "Creating resource group, storage account and container for terraform state"
 
@@ -84,14 +84,8 @@ STORAGE_ID=$(az storage account show \
 echo "Storage account ID: $STORAGE_ID"
 #echo "Granting Storage Blob Data Contributor role to your local Azure identity"
 
-#az role assignment create \
-#  --assignee-object-id "$LOCAL_USER_OBJECT_ID" \
-#  --assignee-principal-type User \
-#  --role "Storage Blob Data Contributor" \
-#  --scope "$STORAGE_ID"
-
-echo "Show LOCAL_USER_OBJECT_ID"
-echo "$LOCAL_USER_OBJECT_ID"
+#echo "Show LOCAL_USER_OBJECT_ID"
+#echo "$LOCAL_USER_OBJECT_ID"
 
 # Verify theobject ID belongs to the current tenant
 echo "Show signed in user"
@@ -141,7 +135,7 @@ grant_blob_role() {
   echo "Granted Storage Blob Data Contributor role to $principal_type $principal_id"
 }
 
-echo "Granting Storage Blob Data Contributor role to your local Azure identity"
+#echo "Granting Storage Blob Data Contributor role to your local Azure identity"
 grant_blob_role "$LOCAL_USER_OBJECT_ID" "User"
 
 echo "Granted Storage Blob Data Contributor role to your local Azure identity"
