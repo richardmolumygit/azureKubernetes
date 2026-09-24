@@ -40,7 +40,9 @@ jobs:
           tenant-id: ${{ secrets.TENANT_ID }}
           subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
 
-      - run: ./scripts/createBlobStorage.sh
+      - run: |
+          chmod +x ./scripts/createBlobStorage.sh
+          ./scripts/createBlobStorage.sh
         env:
           GITHUB_ACTIONS_CLIENT_ID: ${{ secrets.CLIENT_ID }}
           GITHUB_ACTIONS_SP_OBJECT_ID: ${{ secrets.OBJECT_ID }}
