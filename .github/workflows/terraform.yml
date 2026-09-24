@@ -6,9 +6,6 @@ on:
       - main
       - develop
       - feature/**
-# pull_request:
-#   branches:
-#     - main:
   workflow_dispatch:
     inputs:
       confirm_deploy:
@@ -28,6 +25,13 @@ jobs:
   setup:
     name: "Create storage"
     runs-on: ubuntu-latest
+    # Only run setup when a feature/* is run
+    condition: not(
+      ${{ 
+         (github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.confirm_deploy == 'GO')
+      }}
+    )
 
     steps:
       - name: Checkout Source Code
@@ -64,7 +68,13 @@ jobs:
     name: "Terraform init & Plan"
     runs-on: ubuntu-latest
     needs: setup
-    if: ( github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' )
+    # Only run setup when a feature/* is run
+    condition: not(
+      ${{ 
+         (github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.confirm_deploy == 'GO')
+      }}
+    )
 
     env:
       ARM_USE_OIDC: true
@@ -117,6 +127,7 @@ jobs:
     name: "Terraform Apply"
     needs: plan
     runs-on: ubuntu-latest
+    # Only run when this is manual and confirm_deploy == 'GO'
     if: >-
       ${{ 
          (github.event_name == 'workflow_dispatch' &&
@@ -173,6 +184,7 @@ jobs:
     name: "Terraform Destroy"
     needs: plan
     runs-on: ubuntu-latest
+    # Only run when this is manual and confirm_destroy == 'DO'
     if: >-
       ${{ github.event_name == 'workflow_dispatch' &&
           github.event.inputs.confirm_destroy == 'DO' }}
