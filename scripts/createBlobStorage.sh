@@ -14,8 +14,8 @@ export STATE_STORAGE="aksterraformstorage"
 export STATE_CONTAINER="tfstate"
 export LOCATION="eastus"
 
-echo "Setting GITHUB_ACTIONS_CLIENT_ID if is not passed in"
 if [ -z "${GITHUB_ACTIONS_CLIENT_ID:-}" ]; then
+   echo "Setting GITHUB_ACTIONS_CLIENT_ID as it was not passed in"
    export GITHUB_ACTIONS_CLIENT_ID=$(
      az ad app list \
        --display-name "github-actions-terraform" \
@@ -149,6 +149,7 @@ echo "Granting Storage Blob Data Contributor role to GitHub Actions service prin
 
 # Resolve the application client ID to its service principal object ID.
 if [ -z "${GITHUB_ACTIONS_SP_OBJECT_ID:-}" ]; then
+   echo "Setting GITHUB_ACTIONS_SP_OBJECT_ID as it wasn't passed it"
    GITHUB_ACTIONS_SP_OBJECT_ID=$(az ad sp show \
      --id "$GITHUB_ACTIONS_CLIENT_ID" \
      --query id \
